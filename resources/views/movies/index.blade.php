@@ -1,22 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Katalog Film') }}
-        </h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Katalog Film</h2>
     </x-slot>
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            
-            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                <a href="{{ route('movies.create') }}" class="bg-indigo-600 text-white px-5 py-2 rounded-md hover:bg-indigo-700 transition">
-                    + Tambah Film
-                </a>
+            <div class="flex justify-between mb-6">
+                
+                @if(Auth::user()->role === 'admin')
+                    <a href="{{ route('movies.create') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 active:bg-gray-900 focus:outline-none focus:border-gray-900 focus:ring ring-gray-300 disabled:opacity-25 transition ease-in-out duration-150">
+                        + Tambah Film
+                    </a>
+                @else
+                    <div></div> @endif
 
-                <div class="w-full md:w-1/3">
-                    <input type="text" id="search-input" placeholder="Cari judul film..." 
-                           class="w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 px-4 py-2">
-                </div>
+                <input type="text" id="search-input" placeholder="Cari judul film..." class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
             </div>
 
             @if(session('success'))
@@ -28,33 +26,16 @@
             <div id="movie-container">
                 @include('movies.partials.list', ['movies' => $movies])
             </div>
-
-            <div class="mt-6">
-                {{ $movies->links() }}
-            </div>
+            
+            <div class="mt-4">{{ $movies->links() }}</div>
         </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        $(document).ready(function() {
-            // Saat user mengetik di kolom search...
-            $('#search-input').on('keyup', function() {
-                var query = $(this).val(); // Ambil teks yang diketik
-
-                // Kirim request ke server (tanpa reload halaman)
-                $.ajax({
-                    url: "{{ route('movies.search') }}",
-                    type: "GET",
-                    data: {'query': query},
-                    success: function(data) {
-                        // Ganti isi container dengan hasil pencarian baru
-                        $('#movie-container').html(data);
-                    },
-                    error: function(xhr) {
-                        console.log("Error:", xhr);
-                    }
-                });
+        $('#search-input').on('keyup', function() {
+            $.get("{{ route('movies.search') }}", {query: $(this).val()}, function(data) {
+                $('#movie-container').html(data);
             });
         });
     </script>
