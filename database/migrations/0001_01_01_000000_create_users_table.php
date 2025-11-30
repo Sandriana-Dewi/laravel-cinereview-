@@ -14,7 +14,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('role')->default('user'); // Kolom Role
+            $table->string('role')->default('user');
+            $table->string('avatar')->nullable(); // Kolom Foto Profil
             $table->rememberToken();
             $table->timestamps();
         });
